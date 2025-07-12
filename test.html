@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>할일 관리 시스템</title>
+    <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="assets/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.css">
+    <link rel="stylesheet" href="assets/vendors/jvectormap/jquery-jvectormap.css">
+    <link rel="stylesheet" href="assets/vendors/flag-icon-css/css/flag-icon.min.css">
+    <link rel="stylesheet" href="assets/vendors/owl-carousel-2/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/vendors/owl-carousel-2/owl.theme.default.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="shortcut icon" href="assets/images/favicon.png" />
+
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700");
+      
+      body {
+        font-family: "Poppins", sans-serif;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #6c7293;
+        background-color: #191c24;
+      }
+
+      .container-scroller {
+        width: 100%;
+        overflow-x: hidden;
+      }
+
+      .page-body-wrapper {
+        min-height: calc(100vh - 70px);
+        display: flex;
+        flex-direction: row;
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        min-height: calc(100vh - 70px);
+        background: #191c24;
+        width: 260px;
+        transition: width 0.25s ease, background 0.25s ease;
+        flex: 0 0 260px;
+        position: relative;
+      }
+
+      .sidebar .nav {
+        overflow: hidden;
+        flex-wrap: nowrap;
+        flex-direction: column;
+        margin-bottom: 60px;
+      }
+
+      .sidebar .nav .nav-item {
+        border-radius: 4px;
+        margin-bottom: 5px;
+      }
+
+      .sidebar .nav .nav-item .nav-link {
+        color: #a7afbc;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        padding: 0.6875rem 1.25rem;
+        font-size: 0.875rem;
+        line-height: 1;
+        position: relative;
+        text-decoration: none;
+      }
+
+      .sidebar .nav .nav-item .nav-link:hover {
+        color: #ffffff;
+        text-decoration: none;
+      }
+
+      .sidebar .nav .nav-item .nav-link.active {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar .nav .nav-item .nav-link i.menu-icon {
+        margin-right: 0.75rem;
+        font-size: 1rem;
+        vertical-align: middle;
+      }
+
+      /* Modified: Removed fixed-top from sidebar-brand-wrapper in custom CSS, will use the one from style.css */
+      /* Also, the original `style.css` has `position: fixed` for `.sidebar .sidebar-brand-wrapper` */
+      /* So, explicitly remove fixed-top if it's conflicting, or ensure `style.css` isn't overridden */
+      .sidebar-brand-wrapper {
+        background: #191c24;
+        height: 70px;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        position: relative; /* Changed from fixed to relative to avoid conflict */
+      }
+
+      .sidebar-brand {
+        color: #ffffff;
+        font-size: 1.25rem;
+        line-height: 1.25rem;
+        margin-right: 0;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+      }
+
+      .sidebar-brand:hover {
+        color: #ffffff;
+        text-decoration: none;
+      }
+
+      /* Main Panel */
+      .main-panel {
+        transition: width 0.25s ease, margin 0.25s ease;
+        width: calc(100% - 260px);
+        min-height: calc(100vh - 70px);
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Navbar */
+      .navbar {
+        background: #191c24;
+        border: 0;
+        padding: 0.9375rem 1.25rem;
+        border-radius: 0;
+        color: #ffffff;
+        position: relative;
+        z-index: 999; 
+      }
+
+      .navbar .navbar-brand-wrapper {
+        width: 100%;
+      }
+
+      .navbar .navbar-menu-wrapper {
+        color: #ffffff;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+      }
+
+      /* Content Wrapper */
+      .content-wrapper {
+        background: #191c24;
+        padding: 2.5rem 2.5rem 0;
+        width: 100%;
+        flex-grow: 1;
+      }
+
+      /* Cards */
+      .card {
+        border: 1px solid #2c2e33;
+        border-radius: 2px;
+        background: #2c2e33;
+        position: relative;
+        margin-bottom: 30px;
+      }
+
+      .card .card-body {
+        padding: 1.88rem 1.81rem;
+        color: #a7afbc;
+      }
+
+      .card .card-title {
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .card .card-description {
+        margin-bottom: 1.5rem;
+        color: #76838f;
+        font-size: 0.8125rem;
+        font-weight: 400;
+      }
+
+      /* Stats Cards */
+      .grid-margin {
+        margin-bottom: 1.875rem;
+      }
+
+      .stretch-card {
+        display: flex;
+        align-items: stretch;
+        justify-content: stretch;
+      }
+
+      /* Progress */
+      .progress {
+        border-radius: 3px;
+        height: 4px;
+        background: #3e4046;
+      }
+
+      .progress .progress-bar {
+        border-radius: 3px;
+      }
+
+      .bg-gradient-success {
+        background: linear-gradient(45deg, #84d9d2, #07cdae) !important;
+      }
+
+      .bg-gradient-info {
+        background: linear-gradient(45deg, #1bcfb4, #A2ECBF) !important;
+      }
+
+      .bg-gradient-warning {
+        background: linear-gradient(45deg, #ffb64d, #ffcb80) !important;
+      }
+
+      .bg-gradient-danger {
+        background: linear-gradient(45deg, #fe8a7d, #f97794) !important;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        color: #ffffff;
+        background-color: #b66dff;
+        border-color: #b66dff;
+      }
+
+      .btn-primary:hover {
+        color: #ffffff;
+        background-color: #985de6;
+        border-color: #985de6;
+      }
+
+      .btn-success {
+        color: #ffffff;
+        background-color: #84d9d2;
+        border-color: #84d9d2;
+      }
+
+      .btn-info {
+        color: #ffffff;
+        background-color: #1bcfb4;
+        border-color: #1bcfb4;
+      }
+
+      .btn-warning {
+        color: #212529;
+        background-color: #ffb64d;
+        border-color: #ffb64d;
+      }
+
+      .btn-danger {
+        color: #ffffff;
+        background-color: #fe8a7d;
+        border-color: #fe8a7d;
+      }
+
+      /* Form Controls */
+      .form-control {
+        background: #2c2e33;
+        border: 1px solid #3e4046;
+        color: #a7afbc;
+        font-size: 0.75rem;
+        padding: 0.94rem 0.94rem;
+      }
+
+      .form-control:focus {
+        background: #2c2e33;
+        border-color: #b66dff;
+        color: #ffffff;
+        box-shadow: none;
+      }
+
+      /* Labels */
+      .form-label, label {
+        color: #a7afbc;
+        font-size: 0.75rem;
+        line-height: 1;
+        vertical-align: top;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Badges */
+      .badge {
+        font-size: 0.6875rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.125rem;
+      }
+
+      .badge-primary {
+        color: #ffffff;
+        background-color: #b66dff;
+      }
+
+      .badge-success {
+        color: #ffffff;
+        background-color: #84d9d2;
+      }
+
+      .badge-info {
+        color: #ffffff;
+        background-color: #1bcfb4;
+      }
+
+      .badge-warning {
+        color: #212529;
+        background-color: #ffb64d;
+      }
+
+      .badge-danger {
+        color: #ffffff;
+        background-color: #fe8a7d;
+      }
+
+      .badge-light {
+        color: #212529;
+        background-color: #eef0f7;
+      }
+
+      /* Modal */
+      .modal-content {
+        background-color: #2c2e33;
+        border: 1px solid #3e4046;
+      }
+
+      .modal-header {
+        border-bottom: 1px solid #3e4046;
+        color: #ffffff;
+      }
+
+      .modal-footer {
+        border-top: 1px solid #3e4046;
+      }
+
+      .close {
+        color: #ffffff;
+        text-shadow: none;
+        opacity: 0.8;
+      }
+
+      .close:hover {
+        color: #ffffff;
+        opacity: 1;
+      }
+
+      /* Task Items */
+      .task-item {
+        background: #2c2e33;
+        border: 1px solid #3e4046;
+        border-radius: 2px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        cursor: move;
+        transition: all 0.3s;
+        border-left: 4px solid #b66dff;
+      }
+
+      .task-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      }
+
+      .subtask-item {
+        background: #3e4046;
+        border-radius: 2px;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        border: 1px solid #4b4d52;
+        transition: all 0.3s;
+      }
+
+      .subtask-item:hover {
+        background: #4b4d52;
+      }
+
+      .subtask-completed {
+        background: #2a3f3b;
+        border-color: #3e5a54;
+      }
+
+      /* Text Colors */
+      .text-white {
+        color: #ffffff !important;
+      }
+
+      .text-muted {
+        color: #76838f !important;
+      }
+
+      /* Footer */
+      .footer {
+        background: #191c24;
+        border-top: 1px solid #2c2e33;
+        color: #76838f;
+        font-size: 0.8125rem;
+        padding: 0.9375rem 2.5rem;
+        text-align: center;
+      }
+
+      /* Content sections */
+      .content-section {
+        display: none;
+      }
+
+      .content-section.active {
+        display: block;
+      }
+
+      /* Mobile */
+      @media (max-width: 991px) {
+        .sidebar {
+          position: fixed;
+          height: 100vh;
+          left: -260px;
+          z-index: 1001;
+          transition: left 0.25s ease; 
+        }
+        
+        .sidebar.open {
+          left: 0;
+        }
+        
+        .main-panel {
+          width: 100%;
+          transition: margin-left 0.25s ease;
+        }
+        
+        body.sidebar-open .main-panel {
+            margin-left: 260px;
+        }
+
+        .content-wrapper {
+          padding: 1.5rem 1.5rem 0;
+        }
+        .navbar .navbar-brand-wrapper.d-lg-none {
+            display: flex !important; 
+            width: auto; 
+        }
+      }
+
+      /* Stats specific styling */
+      .stats-number {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+
+      .stats-text {
+        color: #a7afbc;
+        font-size: 0.75rem;
+        margin-bottom: 0;
+      }
+
+      .icon-box {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .icon-box-success {
+        background: rgba(132, 217, 210, 0.2);
+        color: #84d9d2;
+      }
+
+      .icon-box-info {
+        background: rgba(27, 207, 180, 0.2);
+        color: #1bcfb4;
+      }
+
+      .icon-box-warning {
+        background: rgba(255, 182, 77, 0.2);
+        color: #ffb64d;
+      }
+
+      .icon-box-danger {
+        background: rgba(254, 138, 125, 0.2);
+        color: #fe8a7d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-scroller">
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+          <a class="sidebar-brand brand-logo" href="#"><i class="mdi mdi-format-list-checks mr-2"></i>할일 관리</a>
+          <a class="sidebar-brand brand-logo-mini" href="#"><i class="mdi mdi-format-list-checks"></i></a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item profile">
+            <div class="profile-desc">
+              <div class="profile-pic">
+                <div class="count-indicator">
+                  <img class="img-xs rounded-circle " src="assets/images/faces/face15.jpg" alt="">
+                  <span class="count bg-success"></span>
+                </div>
+                <div class="profile-name">
+                  <h5 class="mb-0 font-weight-normal">Henry Klein</h5>
+                  <span>Gold Member</span>
+                </div>
+              </div>
+              <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
+              <div class="dropdown-menu dropdown-menu-right sidebar-dropdown preview-list" aria-labelledby="profile-dropdown">
+                <a href="#" class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-settings text-primary"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject ellipsis mb-1 text-small">Account settings</p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-onepassword  text-info"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject ellipsis mb-1 text-small">Change Password</p>
+                  </div>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-calendar-today text-success"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject ellipsis mb-1 text-small">To-do list</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Navigation</span>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link active" href="#" onclick="showSection('dashboard')">
+              <span class="menu-icon">
+                <i class="mdi mdi-speedometer"></i>
+              </span>
+              <span class="menu-title">대시보드</span>
+            </a>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#" onclick="showSection('tasks')">
+              <span class="menu-icon">
+                <i class="mdi mdi-format-list-bulleted"></i>
+              </span>
+              <span class="menu-title">할일 관리</span>
+            </a>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#" onclick="showSection('outside')">
+              <span class="menu-icon">
+                <i class="mdi mdi-map-marker"></i>
+              </span>
+              <span class="menu-title">밖에서 할 일</span>
+            </a>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#" onclick="showSection('inside')">
+              <span class="menu-icon">
+                <i class="mdi mdi-home"></i>
+              </span>
+              <span class="menu-title">집에서 할 일</span>
+            </a>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#" onclick="showSection('completed')">
+              <span class="menu-icon">
+                <i class="mdi mdi-check-circle"></i>
+              </span>
+              <span class="menu-title">완료된 일</span>
+            </a>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#" onclick="showSection('analytics')">
+              <span class="menu-icon">
+                <i class="mdi mdi-chart-line"></i>
+              </span>
+              <span class="menu-title">분석</span>
+            </a>
+          </li>
+          </ul>
+      </nav>
+      <div class="container-fluid page-body-wrapper">
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+            <a class="navbar-brand brand-logo-mini" href="#"><i class="mdi mdi-format-list-checks"></i></a>
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize" onclick="toggleSidebar()">
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <div class="nav-link mt-2 mt-md-0 d-none d-lg-flex">
+                  <h4 class="mb-0 text-white" id="pageTitle">할일 관리 대시보드</h4>
+                </div>
+              </li>
+            </ul>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item dropdown d-none d-lg-block">
+                <a class="nav-link btn btn-success create-new-button" href="#" onclick="showAddTaskModal()">+ 새 할일 추가</a>
+              </li>
+              <li class="nav-item nav-settings d-none d-lg-block">
+                <a class="nav-link" href="#">
+                  <i class="mdi mdi-view-grid"></i>
+                </a>
+              </li>
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
+                  <i class="mdi mdi-email"></i>
+                  <span class="count bg-success"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+                  <h6 class="p-3 mb-0">Messages</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <img src="assets/images/faces/face4.jpg" alt="image" class="rounded-circle profile-pic">
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject ellipsis mb-1">Mark send you a message</p>
+                      <p class="text-muted mb-0"> 1 Minutes ago </p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <img src="assets/images/faces/face2.jpg" alt="image" class="rounded-circle profile-pic">
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject ellipsis mb-1">Cregh send you a message</p>
+                      <p class="text-muted mb-0"> 15 Minutes ago </p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <img src="assets/images/faces/face3.jpg" alt="image" class="rounded-circle profile-pic">
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject ellipsis mb-1">Profile picture updated</p>
+                      <p class="text-muted mb-0"> 18 Minutes ago </p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <p class="p-3 mb-0 text-center">4 new messages</p>
+                </div>
+              </li>
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
+                  <i class="mdi mdi-bell"></i>
+                  <span class="count bg-danger"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                  <h6 class="p-3 mb-0">Notifications</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-calendar text-success"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Event today</p>
+                      <p class="text-muted ellipsis mb-0"> Just a reminder that you have an event today </p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-settings text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Settings</p>
+                      <p class="text-muted ellipsis mb-0"> Update dashboard </p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-link-variant text-warning"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Launch Admin</p>
+                      <p class="text-muted ellipsis mb-0"> New admin wow! </p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <p class="p-3 mb-0 text-center">See all notifications</p>
+                </div>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
+                  <div class="navbar-profile">
+                    <img class="img-xs rounded-circle" src="assets/images/faces/face15.jpg" alt="">
+                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Henry Klein</p>
+                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                  <h6 class="p-3 mb-0">Profile</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-settings text-success"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Settings</p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-logout text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Log out</p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <p class="p-3 mb-0 text-center">Advanced settings</p>
+                </div>
+              </li>
+            </ul>
+            <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+              <span class="mdi mdi-format-line-spacing"></span>
+            </button>
+          </div>
+        </nav>
+        <div class="main-panel">
+          <div class="content-wrapper">
+            
+            <div id="dashboard" class="content-section active">
+              <div class="row">
+                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-9">
+                          <div class="d-flex align-items-center align-self-start">
+                            <span class="stats-number" id="totalTasks">0</span>
+                          </div>
+                        </div>
+                        <div class="col-3">
+                          <div class="icon icon-box-success ">
+                            <span class="mdi mdi-format-list-bulleted icon-item"></span>
+                          </div>
+                        </div>
+                      </div>
+                      <h6 class="stats-text">전체 할일</h6>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-9">
+                          <div class="d-flex align-items-center align-self-start">
+                            <span class="stats-number" id="completedTasks">0</span>
+                          </div>
+                        </div>
+                        <div class="col-3">
+                          <div class="icon icon-box-success">
+                            <span class="mdi mdi-check-circle icon-item"></span>
+                          </div>
+                        </div>
+                      </div>
+                      <h6 class="stats-text">완료된 할일</h6>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-9">
+                          <div class="d-flex align-items-center align-self-start">
+                            <span class="stats-number" id="outsideTasks">0</span>
+                          </div>
+                        </div>
+                        <div class="col-3">
+                          <div class="icon icon-box-warning">
+                            <span class="mdi mdi-map-marker icon-item"></span>
+                          </div>
+                        </div>
+                      </div>
+                      <h6 class="stats-text">밖에서 할 일</h6>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-9">
+                          <div class="d-flex align-items-center align-self-start">
+                            <span class="stats-number" id="insideTasks">0</span>
+                          </div>
+                        </div>
+                        <div class="col-3">
+                          <div class="icon icon-box-info">
+                            <span class="mdi mdi-home icon-item"></span>
+                          </div>
+                        </div>
+                      </div>
+                      <h6 class="stats-text">집에서 할 일</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">최근 할일</h4>
+                      <p class="card-description">최근에 추가되거나 수정된 할일들</p>
+                      <div id="recentTasks">
+                        <div class="text-center py-4">
+                          <i class="mdi mdi-format-list-checks" style="font-size: 3rem; color: #76838f;"></i>
+                          <h5 class="text-muted mt-3">할일이 없습니다</h5>
+                          <p class="text-muted">새로운 할일을 추가해보세요!</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tasks" class="content-section">
+              <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">할일 목록</h4>
+                      <p class="card-description">드래그해서 우선순위를 변경할 수 있습니다</p>
+                      <div id="taskList" class="task-container">
+                        </div>
+                      <div id="emptyState" class="text-center py-5">
+                        <i class="mdi mdi-format-list-checks" style="font-size: 4rem; color: #76838f;"></i>
+                        <h5 class="text-muted mt-3">할일이 없습니다</h5>
+                        <p class="text-muted">새로운 할일을 추가해보세요!</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="outside" class="content-section">
+              <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">밖에서 할 수 있는 일</h4>
+                      <p class="card-description">외출 중에 처리할 수 있는 작업들</p>
+                      <div id="outsideTaskList">
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="inside" class="content-section">
+              <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">집에서 해야 하는 일</h4>
+                      <p class="card-description">집중이 필요하거나 집에서만 가능한 작업들</p>
+                      <div id="insideTaskList">
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="completed" class="content-section">
+              <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">완료된 할일</h4>
+                      <p class="card-description">성공적으로 완료한 작업들</p>
+                      <div id="completedTaskList">
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="analytics" class="content-section">
+              <div class="row">
+                <div class="col-md-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">완료율 분석</h4>
+                      <p class="card-description">할일 완료 현황</p>
+                      <div class="mb-3">
+                        <small class="text-muted">이번 주 완료율</small>
+                        <div class="progress">
+                          <div class="progress-bar bg-gradient-success" id="weeklyProgress" style="width: 0%"></div>
+                        </div>
+                        <small class="text-muted">0% 완료</small>
+                      </div>
+                      <div class="mb-3">
+                        <small class="text-muted">이번 달 완료율</small>
+                        <div class="progress">
+                          <div class="progress-bar bg-gradient-info" id="monthlyProgress" style="width: 0%"></div>
+                        </div>
+                        <small class="text-muted">0% 완료</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">생산성 통계</h4>
+                      <p class="card-description">작업 효율성 분석</p>
+                      <div class="template-demo">
+                        <div class="d-flex justify-content-between">
+                          <small>밖에서 완료한 작업</small>
+                          <small id="outsideCompleted">0개</small>
+                        </div>
+                        <div class="progress mb-3">
+                          <div class="progress-bar bg-gradient-warning" id="outsideCompletedProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                          <small>집에서 완료한 작업</small>
+                          <small id="insideCompleted">0개</small>
+                        </div>
+                        <div class="progress">
+                          <div class="progress-bar bg-gradient-danger" id="insideCompletedProgress" style="width: 0%"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
+              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
+            </div>
+          </footer>
+          </div>
+        </div>
+      </div>
+    <div class="modal fade" id="taskModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="mdi mdi-plus-circle mr-2"></i>
+              <span id="modalTitle">새 할일 추가</span>
+            </h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-12 mb-3">
+                <label class="form-label">제목</label>
+                <input type="text" class="form-control" id="taskTitle" required>
+              </div>
+              <div class="col-12 mb-3">
+                <label class="form-label">목적</label>
+                <textarea class="form-control" id="taskPurpose" rows="3" required></textarea>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">기한</label>
+                <input type="date" class="form-control" id="taskDeadline" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">중요도</label>
+                <select class="form-control" id="taskImportance">
+                  <option value="1">1 - 낮음</option>
+                  <option value="2">2</option>
+                  <option value="3" selected>3 - 보통</option>
+                  <option value="4">4</option>
+                  <option value="5">5 - 매우 중요</option>
+                </select>
+              </div>
+              <div class="col-12 mb-3">
+                <label class="form-label">방법</label>
+                <textarea class="form-control" id="taskMethod" rows="3" required></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+            <button type="button" class="btn btn-primary" onclick="saveTask()">
+              <i class="mdi mdi-brain mr-1"></i>
+              LLM으로 세부작업 생성
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="assets/vendors/chart.js/Chart.min.js"></script>
+    <script src="assets/vendors/progressbar.js/progressbar.min.js"></script>
+    <script src="assets/vendors/jvectormap/jquery-jvectormap.min.js"></script>
+    <script src="assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    <script src="assets/vendors/owl-carousel-2/owl.carousel.min.js"></script>
+    <script src="assets/js/off-canvas.js"></script>
+    <script src="assets/js/hoverable-collapse.js"></script>
+    <script src="assets/js/misc.js"></script>
+    <script src="assets/js/settings.js"></script>
+    <script src="assets/js/todolist.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    
+    <script>
+        // 전역 변수
+        let tasks = [];
+        let currentView = 'dashboard';
+        let editingTaskId = null;
+        let taskModal;
+
+        // 초기화
+        $(document).ready(function() {
+            taskModal = $('#taskModal');
+            loadTasks();
+            initializeDragAndDrop();
+            updateStats();
+            // 페이지 로드 시 대시보드를 기본으로 활성화
+            showSection('dashboard'); 
+        });
+
+        // 드래그 앤 드롭 초기화
+        function initializeDragAndDrop() {
+            const taskList = document.getElementById('taskList');
+            if (taskList) {
+                new Sortable(taskList, {
+                    animation: 150,
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    onEnd: function(evt) {
+                        const taskId = parseInt(evt.item.dataset.taskId);
+                        const newIndex = evt.newIndex;
+                        
+                        // 우선순위 업데이트
+                        const task = tasks.find(t => t.id === taskId);
+                        tasks.splice(tasks.indexOf(task), 1);
+                        tasks.splice(newIndex, 0, task);
+                        
+                        // 우선순위 재설정
+                        tasks.forEach((task, index) => {
+                            task.priority = index + 1;
+                        });
+                        
+                        saveTasks();
+                        renderAllSections();
+                    }
+                });
+            }
+        }
+
+        // 로컬 스토리지에서 할일 불러오기
+        function loadTasks() {
+            const savedTasks = localStorage.getItem('tasks');
+            if (savedTasks) {
+                tasks = JSON.parse(savedTasks);
+            }
+        }
+
+        // 로컬 스토리지에 할일 저장
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            updateStats();
+        }
+
+        // 통계 업데이트
+        function updateStats() {
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(task => getProgress(task) === 100).length;
+            const outsideTasks = tasks.reduce((count, task) => {
+                return count + task.subtasks.filter(st => st.canDoOutside && !st.completed).length;
+            }, 0);
+            const insideTasks = tasks.reduce((count, task) => {
+                return count + task.subtasks.filter(st => !st.canDoOutside && !st.completed).length;
+            }, 0);
+
+            $('#totalTasks').text(totalTasks);
+            $('#completedTasks').text(completedTasks);
+            $('#outsideTasks').text(outsideTasks);
+            $('#insideTasks').text(insideTasks);
+
+            // 분석 섹션 업데이트
+            updateAnalytics();
+        }
+
+        // 분석 데이터 업데이트
+        function updateAnalytics() {
+            const totalSubtasks = tasks.reduce((count, task) => count + task.subtasks.length, 0);
+            const completedSubtasks = tasks.reduce((count, task) => {
+                return count + task.subtasks.filter(st => st.completed).length;
+            }, 0);
+            
+            const outsideCompleted = tasks.reduce((count, task) => {
+                return count + task.subtasks.filter(st => st.canDoOutside && st.completed).length;
+            }, 0);
+            
+            const insideCompleted = tasks.reduce((count, task) => {
+                return count + task.subtasks.filter(st => !st.canDoOutside && st.completed).length;
+            }, 0);
+
+            // 주간/월간 진행률 (시뮬레이션)
+            const weeklyProgress = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
+            const monthlyProgress = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
+
+            $('#weeklyProgress').css('width', weeklyProgress + '%').next().text(weeklyProgress + '% 완료');
+            $('#monthlyProgress').css('width', monthlyProgress + '%').next().text(monthlyProgress + '% 완료');
+
+            // 장소별 완료 통계
+            $('#outsideCompleted').text(outsideCompleted + '개');
+            $('#insideCompleted').text(insideCompleted + '개');
+            
+            const maxCompleted = Math.max(outsideCompleted, insideCompleted, 1);
+            $('#outsideCompletedProgress').css('width', (outsideCompleted / maxCompleted * 100) + '%');
+            $('#insideCompletedProgress').css('width', (insideCompleted / maxCompleted * 100) + '%');
+        }
+
+        // 모든 섹션 렌더링
+        function renderAllSections() {
+            renderTasks();
+            renderOutsideTasks();
+            renderInsideTasks();
+            renderCompletedTasks();
+            renderRecentTasks();
+            updateStats();
+        }
+
+        // 할일 목록 렌더링 (전체)
+        function renderTasks() {
+            const taskList = $('#taskList');
+            const emptyState = $('#emptyState');
+            
+            const activeTasks = tasks.filter(task => getProgress(task) < 100);
+            
+            if (activeTasks.length === 0) {
+                taskList.hide();
+                emptyState.show();
+                return;
+            }
+            
+            taskList.show();
+            emptyState.hide();
+            
+            const tasksHtml = activeTasks
+                .sort((a, b) => (a.priority || 0) - (b.priority || 0))
+                .map(task => createTaskHTML(task))
+                .join('');
+            
+            taskList.html(tasksHtml);
+            initializeDragAndDrop();
+        }
+
+        // 밖에서 할 일 렌더링
+        function renderOutsideTasks() {
+            const container = $('#outsideTaskList');
+            const outsideSubtasks = [];
+            
+            tasks.forEach(task => {
+                task.subtasks.forEach(subtask => {
+                    if (subtask.canDoOutside && !subtask.completed) {
+                        outsideSubtasks.push({
+                            ...subtask,
+                            taskTitle: task.title,
+                            taskId: task.id
+                        });
+                    }
+                });
+            });
+            
+            if (outsideSubtasks.length === 0) {
+                container.html(`
+                    <div class="text-center py-4">
+                        <i class="mdi mdi-map-marker" style="font-size: 3rem; color: #76838f;"></i>
+                        <h5 class="text-muted mt-3">밖에서 할 일이 없습니다</h5>
+                    </div>
+                `);
+                return;
+            }
+            
+            const html = outsideSubtasks.map(subtask => `
+                <div class="subtask-item">
+                    <div class="d-flex align-items-center">
+                        <input type="checkbox" class="form-check-input mr-3" 
+                               onchange="toggleSubtask(${subtask.taskId}, ${subtask.id})"
+                               ${subtask.completed ? 'checked' : ''}>
+                        <div class="flex-grow-1">
+                            <div class="text-white font-weight-medium">${subtask.taskTitle}</div>
+                            <div class="text-muted">${subtask.title}</div>
+                            <small class="badge badge-warning">${subtask.estimatedTime}분 소요</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.html(html);
+        }
+
+        // 집에서 할 일 렌더링
+        function renderInsideTasks() {
+            const container = $('#insideTaskList');
+            const insideSubtasks = [];
+            
+            tasks.forEach(task => {
+                task.subtasks.forEach(subtask => {
+                    if (!subtask.canDoOutside && !subtask.completed) {
+                        insideSubtasks.push({
+                            ...subtask,
+                            taskTitle: task.title,
+                            taskId: task.id
+                        });
+                    }
+                });
+            });
+            
+            if (insideSubtasks.length === 0) {
+                container.html(`
+                    <div class="text-center py-4">
+                        <i class="mdi mdi-home" style="font-size: 3rem; color: #76838f;"></i>
+                        <h5 class="text-muted mt-3">집에서 할 일이 없습니다</h5>
+                    </div>
+                `);
+                return;
+            }
+            
+            const html = insideSubtasks.map(subtask => `
+                <div class="subtask-item">
+                    <div class="d-flex align-items-center">
+                        <input type="checkbox" class="form-check-input mr-3" 
+                               onchange="toggleSubtask(${subtask.taskId}, ${subtask.id})"
+                               ${subtask.completed ? 'checked' : ''}>
+                        <div class="flex-grow-1">
+                            <div class="text-white font-weight-medium">${subtask.taskTitle}</div>
+                            <div class="text-muted">${subtask.title}</div>
+                            <small class="badge badge-info">${subtask.estimatedTime}분 소요</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.html(html);
+        }
+
+        // 완료된 할일 렌더링
+        function renderCompletedTasks() {
+            const container = $('#completedTaskList');
+            const completedTasks = tasks.filter(task => getProgress(task) === 100);
+            
+            if (completedTasks.length === 0) {
+                container.html(`
+                    <div class="text-center py-4">
+                        <i class="mdi mdi-check-circle" style="font-size: 3rem; color: #76838f;"></i>
+                        <h5 class="text-muted mt-3">완료된 할일이 없습니다</h5>
+                    </div>
+                `);
+                return;
+            }
+            
+            const html = completedTasks.map(task => createTaskHTML(task, true)).join('');
+            container.html(html);
+        }
+
+        // 최근 할일 렌더링 (대시보드용)
+        function renderRecentTasks() {
+            const container = $('#recentTasks');
+            const recentTasks = tasks
+                .filter(task => getProgress(task) < 100)
+                .sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))
+                .slice(0, 5);
+            
+            if (recentTasks.length === 0) {
+                container.html(`
+                    <div class="text-center py-4">
+                        <i class="mdi mdi-format-list-checks" style="font-size: 3rem; color: #76838f;"></i>
+                        <h5 class="text-muted mt-3">할일이 없습니다</h5>
+                        <p class="text-muted">새로운 할일을 추가해보세요!</p>
+                    </div>
+                `);
+                return;
+            }
+            
+            const html = recentTasks.map(task => createTaskHTML(task, false, true)).join('');
+            container.html(html);
+        }
+
+        // 할일 HTML 생성
+        function createTaskHTML(task, isCompleted = false, isSimple = false) {
+            const progress = getProgress(task);
+            const importanceColor = getImportanceColor(task.importance);
+            const importanceText = getImportanceText(task.importance);
+
+            if (isSimple) {
+                return `
+                    <div class="task-item mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="text-white mb-1">${task.title}</h6>
+                                <small class="text-muted">${task.deadline}</small>
+                            </div>
+                            <div class="text-right">
+                                <span class="badge ${importanceColor} mb-1">${importanceText}</span>
+                                <div class="progress" style="width: 100px; height: 4px;">
+                                    <div class="progress-bar bg-gradient-success" style="width: ${progress}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="task-item ${isCompleted ? 'completed' : ''}" data-task-id="${task.id}">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="flex-grow-1">
+                            <h5 class="text-white mb-2">${task.title}</h5>
+                            <p class="text-muted mb-2">${task.purpose}</p>
+                            <div class="d-flex flex-wrap mb-2">
+                                <span class="badge badge-light mr-2">
+                                    <i class="mdi mdi-calendar"></i> ${task.deadline}
+                                </span>
+                                <span class="badge ${importanceColor}">${importanceText}</span>
+                            </div>
+                        </div>
+                        ${!isCompleted ? `
+                        <div class="d-flex">
+                            <button class="btn btn-sm btn-outline-primary mr-2" onclick="editTask(${task.id})">
+                                <i class="mdi mdi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteTask(${task.id})">
+                                <i class="mdi mdi-delete"></i>
+                            </button>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">진행률</small>
+                            <small class="text-muted">${Math.round(progress)}%</small>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-gradient-success" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h6 class="text-white mb-3">세부 작업</h6>
+                        ${task.subtasks.map(subtask => createSubtaskHTML(task.id, subtask)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 세부 작업 HTML 생성
+        function createSubtaskHTML(taskId, subtask) {
+            return `
+                <div class="subtask-item ${subtask.completed ? 'subtask-completed' : ''}">
+                    <div class="d-flex align-items-center">
+                        <input type="checkbox" class="form-check-input mr-3" 
+                               ${subtask.completed ? 'checked' : ''}
+                               onchange="toggleSubtask(${taskId}, ${subtask.id})">
+                        <div class="flex-grow-1">
+                            <span class="${subtask.completed ? 'text-decoration-line-through text-muted' : 'text-white'}">${subtask.title}</span>
+                            <div class="d-flex mt-1">
+                                <small class="badge badge-secondary mr-2">${subtask.estimatedTime}분</small>
+                                <small class="badge ${subtask.canDoOutside ? 'badge-warning' : 'badge-info'}">
+                                    <i class="mdi ${subtask.canDoOutside ? 'mdi-map-marker' : 'mdi-home'}"></i>
+                                    ${subtask.canDoOutside ? '밖에서 가능' : '집에서만'}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 진행률 계산
+        function getProgress(task) {
+            if (task.subtasks.length === 0) return 0;
+            const completed = task.subtasks.filter(st => st.completed).length;
+            return (completed / task.subtasks.length) * 100;
+        }
+
+        // 중요도 색상
+        function getImportanceColor(importance) {
+            if (importance >= 5) return 'badge-danger';
+            if (importance >= 4) return 'badge-warning';
+            if (importance >= 3) return 'badge-info';
+            return 'badge-success';
+        }
+
+        // 중요도 텍스트
+        function getImportanceText(importance) {
+            if (importance >= 5) return '매우 중요';
+            if (importance >= 4) return '중요';
+            if (importance >= 3) return '보통';
+            return '낮음';
+        }
+
+        // LLM 시뮬레이션 - 세부 작업 생성 (이 부분을 실제 LLM API 연동으로 교체해야 합니다)
+        async function generateSubtasksWithLLM(taskData) {
+            // Placeholder for actual LLM API call
+            // In a real application, you would send a request to your LLM endpoint here.
+            console.log("Generating subtasks with LLM for:", taskData);
+
+            // Example of a prompt structure for an LLM:
+            const prompt = `
+            사용자: ${taskData.title}
+            목적: ${taskData.purpose}
+            기한: ${taskData.deadline}
+            중요도: ${taskData.importance}
+            방법: ${taskData.method}
+
+            위 할일을 5-10분 단위의 세부 작업으로 분할하고, 각 세부 작업이 외부(모바일)에서 가능한지 여부와 예상 소요 시간을 분 단위로 지정하여 JSON 배열 형식으로 응답해줘.
+            예시:
+            [
+              {"title": "자료 조사 및 정리", "canDoOutside": true, "estimatedTime": 10},
+              {"title": "초안 작성", "canDoOutside": false, "estimatedTime": 30}
+            ]
+            `;
+
+            // This is where you'd call your LLM API. For now, it returns sample data.
+            // Replace this with actual API call:
+            /*
+            try {
+                const response = await fetch('/api/llm-generate-subtasks', { // Replace with your actual API endpoint
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+                const data = await response.json();
+                // You might need to parse data.subtasks if the LLM returns it nested
+                return data.subtasks.map((st, index) => ({ id: Date.now() + index, ...st, completed: false }));
+            } catch (error) {
+                console.error("Error calling LLM API:", error);
+                // Fallback to sample subtasks if API fails
+                return [
+                    { id: Date.now() + 1, title: '자료 조사 (fallback)', canDoOutside: true, estimatedTime: 10, completed: false },
+                    { id: Date.now() + 2, title: '보고서 작성 (fallback)', canDoOutside: false, estimatedTime: 30, completed: false }
+                ];
+            }
+            */
+
+            // Simulated LLM response for demonstration
+            const sampleSubtasks = [
+                { id: Date.now() + 1, title: '관련 서적 훑어보기', canDoOutside: true, estimatedTime: 10, completed: false },
+                { id: Date.now() + 2, title: '온라인 자료 검색', canDoOutside: true, estimatedTime: 15, completed: false },
+                { id: Date.now() + 3, title: '주요 내용 요약 및 정리', canDoOutside: false, estimatedTime: 20, completed: false },
+                { id: Date.now() + 4, title: '아이디어 스케치', canDoOutside: false, estimatedTime: 10, completed: false },
+                { id: Date.now() + 5, title: '1차 초안 작성', canDoOutside: false, estimatedTime: 40, completed: false }
+            ];
+            return sampleSubtasks;
+        }
+
+        // 할일 추가 모달 표시
+        function showAddTaskModal() {
+            editingTaskId = null;
+            $('#modalTitle').text('새 할일 추가');
+            $('#taskTitle').val('');
+            $('#taskPurpose').val('');
+            $('#taskDeadline').val('');
+            $('#taskImportance').val('3');
+            $('#taskMethod').val('');
+            taskModal.modal('show');
+        }
+
+        // 할일 수정
+        function editTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            editingTaskId = taskId;
+            $('#modalTitle').text('할일 수정');
+            $('#taskTitle').val(task.title);
+            $('#taskPurpose').val(task.purpose);
+            $('#taskDeadline').val(task.deadline);
+            $('#taskImportance').val(task.importance);
+            $('#taskMethod').val(task.method);
+            
+            taskModal.modal('show');
+        }
+
+        // 할일 저장 (LLM 호출 포함)
+        async function saveTask() {
+            const formData = {
+                title: $('#taskTitle').val(),
+                purpose: $('#taskPurpose').val(),
+                deadline: $('#taskDeadline').val(),
+                importance: parseInt($('#taskImportance').val()),
+                method: $('#taskMethod').val()
+            };
+
+            if (!formData.title || !formData.purpose || !formData.deadline || !formData.method) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            // LLM으로 세부 작업 생성 (비동기 호출)
+            const subtasks = await generateSubtasksWithLLM(formData);
+            
+            if (editingTaskId) {
+                // 수정
+                const taskIndex = tasks.findIndex(t => t.id === editingTaskId);
+                tasks[taskIndex] = {
+                    ...tasks[taskIndex],
+                    ...formData,
+                    subtasks: subtasks, // Update subtasks with LLM generated ones
+                    updatedAt: new Date().toISOString()
+                };
+            } else {
+                // 추가
+                const newTask = {
+                    id: Date.now(),
+                    ...formData,
+                    subtasks: subtasks, // Assign LLM generated subtasks
+                    priority: tasks.length + 1,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                tasks.push(newTask);
+            }
+
+            saveTasks();
+            renderAllSections();
+            taskModal.modal('hide');
+        }
+
+        // 할일 삭제
+        function deleteTask(taskId) {
+            if (confirm('정말로 이 할일을 삭제하시겠습니까?')) {
+                tasks = tasks.filter(t => t.id !== taskId);
+                saveTasks();
+                renderAllSections();
+            }
+        }
+
+        // 세부 작업 토글
+        function toggleSubtask(taskId, subtaskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            const subtask = task.subtasks.find(st => st.id === subtaskId);
+            if (!subtask) return;
+
+            subtask.completed = !subtask.completed;
+            task.updatedAt = new Date().toISOString();
+            
+            saveTasks();
+            renderAllSections();
+        }
+
+        // 섹션 표시
+        function showSection(sectionName) {
+            // 모든 섹션 숨기기
+            $('.content-section').removeClass('active');
+            $('.nav-link').removeClass('active');
+            
+            // 선택된 섹션 표시
+            $(`#${sectionName}`).addClass('active');
+            $(`.nav-link[onclick="showSection('${sectionName}')"]`).addClass('active');
+            
+            // 페이지 타이틀 업데이트
+            const titles = {
+                'dashboard': '할일 관리 대시보드',
+                'tasks': '할일 관리',
+                'outside': '밖에서 할 일',
+                'inside': '집에서 할 일',
+                'completed': '완료된 일',
+                'analytics': '분석'
+            };
+            
+            $('#pageTitle').text(titles[sectionName] || '할일 관리 시스템');
+            currentView = sectionName;
+        }
+
+        // 사이드바 토글 (모바일)
+        function toggleSidebar() {
+            $('#sidebar').toggleClass('open');
+            $('body').toggleClass('sidebar-open'); // Add/remove a class to body for main-panel adjustment
+            $('.navbar-toggler-right').toggleClass('collapsed'); // Toggle for offcanvas button
+        }
+
+        // 모바일에서 사이드바 외부 클릭 시 닫기
+        $(document).click(function(e) {
+            // Check if click is outside sidebar and navbar toggler, and sidebar is open
+            if (window.innerWidth <= 991 && 
+                !$(e.target).closest('#sidebar').length && 
+                !$(e.target).closest('.navbar-toggler').length && 
+                $('#sidebar').hasClass('open')) {
+                $('#sidebar').removeClass('open');
+                $('body').removeClass('sidebar-open');
+                $('.navbar-toggler-right').removeClass('collapsed');
+            }
+        });
+
+        // 윈도우 리사이즈 이벤트
+        $(window).resize(function() {
+            if (window.innerWidth > 991) {
+                $('#sidebar').removeClass('open');
+                $('body').removeClass('sidebar-open');
+                $('.navbar-toggler-right').removeClass('collapsed');
+            }
+        });
+    </script>
+  </body>
+</html>
